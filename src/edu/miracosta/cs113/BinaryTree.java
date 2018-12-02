@@ -1,6 +1,8 @@
 package edu.miracosta.cs113;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -160,6 +162,165 @@ public class BinaryTree<E> implements Serializable {
         StringBuilder sb = new StringBuilder();
         preOrderTraverse(root, 1, sb);
         return sb.toString();
+    }
+
+    /**
+     * Constructs and returns a polymorphic String visualization of this {@link BinaryTree}.
+     *
+     * @return A String containing a structural visualization of this {@link BinaryTree} and the data stored within
+     *         each {@link Node} it contains.
+     *
+     * @author Christopher Martin
+     * @version 1.0
+     */
+    public String toString2() {
+        // Use StringBuilder to save memory/time while dynamically building up the output String.
+        StringBuilder output = new StringBuilder();
+
+        // Store each line of output initially instead of directly putting them in the StringBuilder because the node
+        // data needs to be inserted after the tree structure has been generated.
+        List<List<String>> lines = new ArrayList<List<String>>();
+
+        // Store the current height level of the BinaryTree to log its data and construct the tree structure.
+        List<Node<E>> currentLevel = new ArrayList<Node<E>>();
+        currentLevel.add(root);
+
+        // Store the children of the nodes in the current level to log next.
+        List<Node<E>> nextLevel = new ArrayList<Node<E>>();
+
+        // Store the longest encountered node toString to help calculate a visually appealing offset for each tree
+        // level.
+        int widestNodeStringLength = 0;
+
+        boolean hasMoreNodes = false;
+        do {
+            // Store all the node data at the current level in order to add it to the List of all lines after
+            // completion.
+            List<String> currentLine = new ArrayList<String>();
+
+            // Log the toString and children of each node on the current level.
+            for (Node<E> currentNode : currentLevel) {
+                if (currentNode == null) {
+                    currentLine.add(null);
+                    nextLevel.add(null);
+                    nextLevel.add(null);
+                } else {
+                    // Log the current nodes toString.
+                    String currentNodeString = currentNode.toString();
+                    currentLine.add(currentNodeString);
+
+                    // Check if the current node's toString is the longest encountered.
+                    if (currentNodeString.length() > widestNodeStringLength) {
+                        widestNodeStringLength = currentNodeString.length();
+                    }
+
+                    nextLevel.add(currentNode.left);
+                    nextLevel.add(currentNode.right);
+
+                    // Set the sentinel value
+                    hasMoreNodes = (currentNode.left != null || currentNode.right != null);
+                }
+            }
+
+            // Ensure that the widestNodeStringLength is even.
+            if (widestNodeStringLength % 2 == 1) {
+                widestNodeStringLength++;
+            }
+
+            // Log the results of all the nodes in the current line.
+            lines.add(currentLine);
+
+            // Swap the data from nextLevel to currentLevel, then clear the old data from nextLevel.
+            List<Node<E>> tmp = currentLevel;
+            currentLevel = nextLevel;
+            nextLevel = tmp;
+            nextLevel.clear();
+        } while (hasMoreNodes);
+
+        // Calculate the number of spaces from the start of the line to the first node's location.
+        int levelLeadingSpaces = lines.get(lines.size() - 1).size() * (widestNodeStringLength + 4);
+        for (int i = 0; i < lines.size(); i++) {
+            // Access the current line and begin building the tree branches to accommodate the stored data.
+            List<String> currentLine = lines.get(i);
+
+            if (i > 0) {
+                for (int j = 0; j < currentLine.size(); j++) {
+                    // Determine which junction character is necessary between the current root and it's leaf nodes.
+                    char junctionCharacter = ' ';
+                    if (j % 2 == 1) {
+                        if (currentLine.get(j - 1) != null) {
+                            junctionCharacter = (currentLine.get(j) != null) ? '┴' : '┘';
+                        } else {
+                            if (j < currentLine.size() && currentLine.get(j) != null) {
+                                junctionCharacter = '└';
+                            }
+                        }
+                    }
+
+                    // Draw the junction character to the output.
+                    output.append(junctionCharacter);
+
+                    // Draw and align the tree branches.
+                    if (currentLine.get(j) == null) {
+                        for (int k = 0; k < levelLeadingSpaces - 1; k++) {
+                            // Draw spaces before the current node to move it into proper position.
+                            output.append(' ');
+                        }
+                    } else {
+                        // Calculate the distance from the left/right most node to the root.
+                        int branchDistance = (int) Math.floor(levelLeadingSpaces / 2.0) - 1;
+
+                        // Extend the right branches of the current line.
+                        for (int k = 0; k < branchDistance; k++) {
+                            output.append(j % 2 == 0 ? ' ' : '─');
+                        }
+
+                        // Draw the branch right angles.
+                        output.append(j % 2 == 0 ? '┌' : '┐');
+
+                        // Extend the left branches of the current line.
+                        for (int k = 0; k < branchDistance; k++) {
+                            output.append(j % 2 == 0 ? "─" : " ");
+                        }
+                    }
+                }
+
+                output.append('\n');
+            }
+
+            // Insert nodes into valid locations under the tree branches.
+            for (int j = 0; j < currentLine.size(); j++) {
+                // Get the toString of the current Node on the current line.
+                String currentNodeToString = currentLine.get(j);
+                if (currentNodeToString == null) {
+                    currentNodeToString = "";
+                }
+
+                // Calculate the gap before and after the given Node so it aligns with the tree branches.
+                int leftGap = (int) Math.ceil(levelLeadingSpaces / 2.0 - currentNodeToString.length() / 2.0);
+                int rightGap = (int) Math.floor(levelLeadingSpaces / 2.0 - currentNodeToString.length() / 2.0);
+
+                // Draw spaces before the current node to move it into proper position. (_____Node)
+                for (int x = 0; x < leftGap; x++) {
+                    output.append(' ');
+                }
+
+                // Draw the current node's toString.
+                output.append(currentNodeToString);
+
+                // Draw spaces after the current node to move following nodes into proper position. (Node_____)
+                for (int x = 0; x < rightGap; x++) {
+                    output.append(' ');
+                }
+            }
+
+            // Reduce the number of leading spaces by half so the following line can accommodate potentially twice
+            // the number of nodes.
+            levelLeadingSpaces /= 2;
+            output.append('\n');
+        }
+
+        return output.toString();
     }
 
     /**

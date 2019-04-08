@@ -1,5 +1,5 @@
-# CS113-HW09-HuffmanTree
-## HW #9 for CS113 - Huffman Tree Encoding + URL Request
+# CS113-HW08-HuffmanTree
+## HW #8 for CS113 - Huffman Tree Encoding + URL Request
 
 **[//Insert Build Status Image//]**
 

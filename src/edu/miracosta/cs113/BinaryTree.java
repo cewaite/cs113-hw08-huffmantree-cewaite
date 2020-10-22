@@ -73,6 +73,20 @@ public class BinaryTree<E> implements Serializable {
         }
     }
 
+    public void setLeftSubtree(E data)
+    {
+        BinaryTree<E> leftTree = new BinaryTree<>();
+        if (leftTree != null)
+        {
+            leftTree.root = new Node<E>(data);
+            root.left = leftTree.root;
+        }
+        else
+        {
+            root.left = null;
+        }
+    }
+
     /**
      * Returns the right subtree.
      *
@@ -84,6 +98,20 @@ public class BinaryTree<E> implements Serializable {
         }
         else {
             return null;
+        }
+    }
+
+    public void setRightSubtree(E data)
+    {
+        BinaryTree<E> rightTree = new BinaryTree<>();
+        if (rightTree != null)
+        {
+            rightTree.root = new Node<E>(data);
+            root.right = rightTree.root;
+        }
+        else
+        {
+            root.right = null;
         }
     }
 
@@ -103,6 +131,18 @@ public class BinaryTree<E> implements Serializable {
      */
     public E getData() {
         return root.data;
+    }
+
+    public void setData(E data) {
+        this.root.data = data;
+    }
+
+    public int getWeight() {
+        return this.root.weight;
+    }
+
+    public void setWeight(int weight) {
+        this.root.weight = weight;
     }
 
     /**
@@ -164,6 +204,22 @@ public class BinaryTree<E> implements Serializable {
         return sb.toString();
     }
 
+//    @Override
+//    public int compareTo(BinaryTree<Character> o) {
+//        if (this.getWeight() < o.getWeight())
+//        {
+//            return -1;
+//        }
+//        else if (this.getWeight() > o.getWeight())
+//        {
+//            return 1;
+//        }
+//        else
+//        {
+//            return 0;
+//        }
+//    }
+
     /**
      * Constructs and returns a polymorphic String visualization of this {@link BinaryTree}.
      *
@@ -173,6 +229,7 @@ public class BinaryTree<E> implements Serializable {
      * @author Christopher Martin
      * @version 1.0
      */
+    /*
     public String toString2() {
         // Use StringBuilder to save memory/time while dynamically building up the output String.
         StringBuilder output = new StringBuilder();
@@ -322,6 +379,7 @@ public class BinaryTree<E> implements Serializable {
 
         return output.toString();
     }
+    */
 
     /**
      * The inner class for the BinaryTree, a specialized node which may hold any data type.
@@ -331,6 +389,8 @@ public class BinaryTree<E> implements Serializable {
     protected static class Node<E> implements Serializable {
         /** The constituent data for this Node. */
         protected E data;
+        /** The constituent weight for this Node. */
+        protected int weight;
         /** The Node's left subtree. */
         protected Node<E> left;
         /** The Node's right subtree. */
@@ -343,13 +403,18 @@ public class BinaryTree<E> implements Serializable {
          */
         public Node(E data) {
             this.data = data;
-            left = null;
-            right = null;
+            this.weight = 0;
+            this.left = null;
+            this.right = null;
         }
 
         @Override
         public String toString() {
-            return data.toString();
+            if (data != null)
+            {
+                return data.toString();
+            }
+            return null;
         }
 
     } // End of class Node

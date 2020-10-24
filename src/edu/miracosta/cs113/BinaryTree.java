@@ -145,6 +145,26 @@ public class BinaryTree<E> implements Serializable {
         this.root.weight = weight;
     }
 
+    public void setIsLeft(boolean isLeft)
+    {
+        this.root.isLeft = isLeft;
+    }
+
+    public boolean getIsLeft()
+    {
+        return this.root.isLeft;
+    }
+
+    public void setParentTree(BinaryTree<E> parentTree)
+    {
+        this.root.parentTree = parentTree;
+    }
+
+    public BinaryTree<E> getParentTree()
+    {
+        return this.root.parentTree;
+    }
+
     /**
      * Constructs a binary tree by reading its data with the given Scanner object.
      *
@@ -389,8 +409,10 @@ public class BinaryTree<E> implements Serializable {
     protected static class Node<E> implements Serializable {
         /** The constituent data for this Node. */
         protected E data;
+        protected BinaryTree<E> parentTree;
         /** The constituent weight for this Node. */
         protected int weight;
+        protected boolean isLeft;
         /** The Node's left subtree. */
         protected Node<E> left;
         /** The Node's right subtree. */
@@ -403,7 +425,9 @@ public class BinaryTree<E> implements Serializable {
          */
         public Node(E data) {
             this.data = data;
+            this.parentTree = null;
             this.weight = 0;
+            this.isLeft =false;
             this.left = null;
             this.right = null;
         }

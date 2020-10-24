@@ -24,10 +24,6 @@ public class HuffmanTree implements HuffmanInterface
         while (!input.isEmpty())
         {
             char c = input.charAt(0);
-//            if (c == '\\')
-//            {
-//                c += input.charAt(1);
-//            }
 
             BinaryTree<Character> subTree = new BinaryTree<Character>(c, null, null);
 
@@ -42,13 +38,28 @@ public class HuffmanTree implements HuffmanInterface
 
             subTree.setWeight(weight);
 
-            try{
-                input = input.replaceAll(Character.toString(c), "");
-            }
-            catch (PatternSyntaxException e)
+//            int i = 0;
+//            while (input.contains(Character.toString(c)))
+//            {
+//                if (input.charAt(i) == c)
+//                {
+//                    input = input.substring(0, i) + input.substring(i + 1);
+//                }
+//                i++;
+//            }
+
+            for (int i = 0; i < weight; i++)
             {
-                input = "";
+                input = input.replace(Character.toString(c), "");
             }
+
+//            try{
+//                input = input.replaceAll(Character.toString(c), "");
+//            }
+//            catch (PatternSyntaxException e)
+//            {
+//                input = input.substring(1);
+//            }
 
             queue.add(subTree);
         }
@@ -63,9 +74,13 @@ public class HuffmanTree implements HuffmanInterface
         while (queue.size() > 1)
         {
             BinaryTree<Character> subTree1 = queue.poll();
+            subTree1.setIsLeft(true);
             BinaryTree<Character> subTree2 = queue.poll();
 
             BinaryTree<Character> rootTree = new BinaryTree<>(null, subTree1, subTree2);
+
+            subTree1.setParentTree(rootTree);
+            subTree2.setParentTree(rootTree);
 
             rootTree.setWeight(subTree1.getWeight() + subTree2.getWeight());
 
@@ -73,7 +88,6 @@ public class HuffmanTree implements HuffmanInterface
         }
 
         huffmanTree = queue.poll();
-//        System.out.println(huffmanTree.toString());
     }
 
     // Will take in a string and decode the message using our constructed
@@ -85,27 +99,29 @@ public class HuffmanTree implements HuffmanInterface
         {
             if (codedMessage.charAt(i) == '0')
             {
-                if (current.isLeaf())
+                if (current.getLeftSubtree().isLeaf())
                 {
-                    decodedMessage += current.getData();
+                    decodedMessage += current.getLeftSubtree().getData();
                     current = huffmanTree;
                 }
                 else
                 {
                     current = current.getLeftSubtree();
                 }
+//                current = current.getLeftSubtree();
             }
             else if (codedMessage.charAt(i) == '1')
             {
-                if (current.isLeaf())
+                if (current.getRightSubtree().isLeaf())
                 {
-                    decodedMessage += current.getData();
+                    decodedMessage += current.getRightSubtree().getData();
                     current = huffmanTree;
                 }
                 else
                 {
                     current = current.getRightSubtree();
                 }
+//                current = current.getRightSubtree();
             }
         }
         return decodedMessage;
@@ -118,26 +134,39 @@ public class HuffmanTree implements HuffmanInterface
         {
             char c = message.charAt(i);
 
-            encodedMessage += recursiveEncode(huffmanTree, encodedMessage, c);
+            encodedMessage += recursiveEncode(huffmanTree, c);
         }
         return encodedMessage;
     }
 
-    public String recursiveEncode(BinaryTree<Character> current, String encodedMessage, char c)
+    public String recursiveEncode(BinaryTree<Character> current, char c)
     {
+        String encodedMessage ="";
         if (current.isLeaf() && current.getData() == c)
         {
+            while (current.getParentTree() != null)
+            {
+                if (current.getIsLeft())
+                {
+                    encodedMessage = 0 + encodedMessage;
+                }
+                else
+                {
+                    encodedMessage = 1 + encodedMessage;
+                }
+                current = current.getParentTree();
+            }
             return encodedMessage;
         }
         else
         {
-            if (current.getLeftSubtree() != null)
+            if (current.getLeftSubtree() != null && encodedMessage == "")
             {
-                recursiveEncode(current.getLeftSubtree(), encodedMessage + 0, c);
+                encodedMessage = recursiveEncode(current.getLeftSubtree(), c);
             }
-            if (current.getRightSubtree() != null)
+            if (current.getRightSubtree() != null && encodedMessage == "")
             {
-                encodedMessage = recursiveEncode(current.getRightSubtree(), encodedMessage + 1, c);
+                encodedMessage = recursiveEncode(current.getRightSubtree(), c);
             }
         }
 
